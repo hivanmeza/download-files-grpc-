@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+option csharp_namespace = "FileDownloadServer";
+
+package filedownload;
+
+// Servicio para descarga de archivos segmentada
+service FileDownloader {
+  // Obtiene información del archivo antes de la descarga
+  rpc GetFileInfo (FileInfoRequest) returns (FileInfoResponse);
+  
+  // Descarga un segmento específico del archivo
+  rpc DownloadSegment (SegmentRequest) returns (stream SegmentResponse);
+}
+
+// Solicitud de información del archivo
+message FileInfoRequest {
+  string file_path = 1;
+}
+
+// Respuesta con información del archivo
+message FileInfoResponse {
+  string file_name = 1;
+  int64 file_size = 2;
+  string content_type = 3;
+  int32 recommended_segments = 4;
+  string file_id = 5;
+}
+
+// Solicitud de un segmento específico
+message SegmentRequest {
+  string file_id = 1;
+  int32 segment_number = 2;
+  int32 total_segments = 3;
+  int32 segment_size_mb = 4; // Tamaño del segmento en MB
+}
+
+// Respuesta con datos del segmento
+message SegmentResponse {
+  bytes data = 1;
+  int32 segment_number = 2;
+  int32 total_segments = 3;
+  int64 offset = 4;
+  int64 segment_size = 5;
+}
